@@ -362,9 +362,11 @@ mutate(Diabetes=ifelse(d==1,"Diabetes","Otras_Causas"))
 saveRDS(tasa_a,"tasa_a.rds")
 ```
 
-
+## Crecimiento en Defunciones  por Diabestes en México. 
 
 ```{r, include = FALSE, echo = FALSE  }
+
+library(ggthemes)
 
 # Step 3: Plotting
 
@@ -374,7 +376,6 @@ growth<-readRDS("tasa_a.rds")%>%
          fecha=replace(fecha,fecha==98,-2), 
          fecha=as.numeric(fecha))
 
-library(ggthemes)
 
 ggplot(growth, aes(x=fecha,  group=Diabetes, color=Diabetes)) +
 geom_line(aes(y=rate))+
