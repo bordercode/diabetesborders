@@ -1,0 +1,582 @@
+---
+title: "DBorders"
+author: "JLMR"
+date: "5 de mayo de 2019"
+output: html_document
+---
+
+
+
+```{r set-global-options, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(eval = TRUE, 
+                      echo = FALSE, 
+                      cache = FALSE,
+                      include = TRUE,
+                      collapse = FALSE,
+                      dependson = NULL,
+                      engine = "R", # Chunks will always have R code, unless noted
+                      error = FALSE,                      
+                      fig.path="Figuras/",  # Set the figure options
+                      fig.align = "center", 
+                      fig.width = 7,
+                      fig.height = 5)
+```
+
+
+
+```{r silent-packages, echo = FALSE, eval = TRUE, message=FALSE, include = FALSE}
+
+library(foreign)
+library(knitr)
+library(tidyverse)
+library(DT)
+library(plotly)
+library(grid)
+library(gridExtra)
+```
+
+
+
+
+```{r, eval=FALSE }
+# Nota. You may skip  step 1 and 2 and go straignt to plotting to see results!
+
+## STEP 1  Loading DATA wrangling
+d17<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def17.csv")
+d16<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def16.csv")
+d15<-read.dbf("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/DEFUN15.DBF")
+d14<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2014.dta")
+d13<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2013.dta")
+d12<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2012.dta")
+d11<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2011.dta")
+d10<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2010.dta")
+d09<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2009.dta")
+d08<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2008.dta")
+d07<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2007.dta")
+d06<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2006.dta")
+d05<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2005.dta")
+d04<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2004.dta")
+d03<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2003.dta")
+d02<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2002.dta")
+d01<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2001.dta")
+d00<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def2000.dta")
+d1999<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def1999.dta")
+d1998<-read.dta("C:/Users/LENOVO/Desktop/DESK/I/data/mortalidad/def1998.dta")
+
+# casos by state  para 1 Diabetes , 0 no diabetes.
+
+d<-data.frame(d=c("E11",	"E110",	"E111",	"E112",	"E113",	"E114",	"E115",	"E116",	"E117",	"E118",	"E119",	"E12",	"E120",	"E121",	"E122",	"E123",	"E124",	"E125",	"E126",	"E127",	"E128",	"E129",	"E13",	"E130",	"E131",	"E132",	"E133",	"E134",	"E135",	"E136",	"E137",	"E138",	"E139",	"E14",	"E140",	"E141",	"E142",	"E143",	"E144",	"E145",	"E146",	"E147",	"E148",	"E149"))
+
+
+```
+
+## Casos por Estado 
+
+```{r}
+casos17<-mutate(d17,d=ifelse(CAUSA_DEF%in%d$d,1,0))%>%
+group_by(ENT_RESID, d)%>%
+count()%>%
+rename(n17=n)%>%
+filter(ENT_RESID!=99&ENT_RESID!=33&ENT_RESID!=34&ENT_RESID!=35)
+
+
+names(d16) <- toupper(names(d16))
+
+casos16<-mutate(d16,d=ifelse(CAUSA_DEF%in%d$d,1,0))%>%
+group_by(ENT_RESID, d)%>%
+count()%>%
+rename(n16=n)%>%
+filter(ENT_RESID!=99&ENT_RESID!=33&ENT_RESID!=34&ENT_RESID!=35)
+
+
+
+casos15<-mutate(d15,d=ifelse(CAUSA_DEF%in%d$d,1,0))%>%
+group_by(ENT_RESID, d)%>%
+count()%>%
+rename(n15=n)%>%
+filter(ENT_RESID!=99&ENT_RESID!=33&ENT_RESID!=34&ENT_RESID!=35)
+
+
+casos14<-mutate(d14,d=ifelse(CAUSA_DEF%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n14=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos13<-mutate(d13,d=ifelse(CAUSA_DEF%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n13=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos12<-mutate(d12,d=ifelse(CAUSA_DEF%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n12=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+
+casos11<-mutate(d11,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n11=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+
+casos10<-mutate(d10,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n10=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos09<-mutate(d09,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n09=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35&ent_res!="00")
+
+casos08<-mutate(d08,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n08=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos07<-mutate(d07,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n07=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos06<-mutate(d06,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n06=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos05<-mutate(d05,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n05=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos04<-mutate(d04,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n04=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos03<-mutate(d03,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n03=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos02<-mutate(d02,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n02=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos01<-mutate(d01,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n01=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos00<-mutate(d00,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n00=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos98<-mutate(d1998,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n1998=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+casos99<-mutate(d1999,d=ifelse(causa%in%d$d,1,0))%>%
+group_by(ent_res, d)%>%
+count()%>%
+rename(n1999=n)%>%
+filter(ent_res!=99&ent_res!=33&ent_res!=34&ent_res!=35)
+
+saveRDS(casos98,"def98_casos.rds")
+saveRDS(casos99,"def99_casos.rds")
+saveRDS(casos00,"def00_casos.rds")
+saveRDS(casos01,"def01_casos.rds")
+saveRDS(casos02,"def02_casos.rds")
+saveRDS(casos03,"def03_casos.rds")
+saveRDS(casos04,"def04_casos.rds")
+saveRDS(casos05,"def05_casos.rds")
+saveRDS(casos06,"def06_casos.rds")
+saveRDS(casos07,"def07_casos.rds")
+saveRDS(casos08,"def08_casos.rds")
+saveRDS(casos09,"def09_casos.rds")
+saveRDS(casos10,"def10_casos.rds")
+saveRDS(casos11,"def11_casos.rds")
+saveRDS(casos12,"def12_casos.rds")
+saveRDS(casos13,"def13_casos.rds")
+saveRDS(casos14,"def14_casos.rds")
+saveRDS(casos15,"def15_casos.rds")
+saveRDS(casos15,"def16_casos.rds")
+saveRDS(casos15,"def17_casos.rds")
+
+
+```
+
+
+
+
+```{r eval=FALSE }
+
+# STEP 2 Casos Trend  08-15
+
+## Load data by year
+
+
+d98<-readRDS("def98_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))%>%
+rename(n98=n1998)
+
+
+d99<-readRDS("def99_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))%>%
+rename(n99=n1999)
+
+d00<-readRDS("def00_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=sprintf("%02d",ent_res))%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d01<-readRDS("def01_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d02<-readRDS("def02_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d03<-readRDS("def03_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d04<-readRDS("def04_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=sprintf("%02d",ent_res))%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d05<-readRDS("def05_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=sprintf("%02d",ent_res))%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d06<-readRDS("def06_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d07<-readRDS("def07_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d08<-readRDS("def08_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d09<-readRDS("def09_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))%>%
+filter(ent_res!="00")
+
+d10<-readRDS("def10_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d11<-readRDS("def11_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d12<-readRDS("def12_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=sprintf("%02d",ent_res))%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d13<-readRDS("def13_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=sprintf("%02d",ent_res))%>%
+mutate(ent_res=as.factor(ent_res),s=as.factor(s))
+
+d14<-readRDS("def14_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=sprintf("%02d",ent_res))%>%
+mutate(ent_res=as.factor(ent_res), s=as.factor(s))
+
+d15<-readRDS("def15_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ENT_RESID), s=as.factor(s))%>%
+select(-ENT_RESID)
+
+L<- list(d15,d14,d13,d12,d11,d10,d09,d08,d07,d06,d05,d04,d03,d02,d01,d00,d98,d99)
+
+d98_d15<-Reduce(inner_join, L)%>%
+select(ent_res,s, n98,	n99,	n00,	n01,	n02,	n03,	n04,	n05,	n06,	n07,	n08,	n09,	n10,	n11,	n12,	n13,	n14,	n15)
+
+
+#  Growth  
+
+d98_15a<-gather(d98_d15,fecha,casos,n98:n15)%>%
+  mutate(fecha=substring(fecha,2,3),logs=log(casos))
+
+base98a<-filter(d98_15a,fecha=="98")%>%
+select(ent_res,s,logs)
+
+tasa_a<-left_join(d98_15a,base98a,by=c("ent_res", "s"))%>%
+mutate(rate=(logs.x-logs.y)*100)%>%
+select(-c(logs.y, logs.x))
+
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+tasa_a<-left_join(tasa_a,cat_e)%>%
+mutate(Suicidio=ifelse(s==1,"Suicidio","Otras_Causas"))
+
+saveRDS(tasa_a,"tasa_a.rds")
+```
+-->
+
+
+
+```{r, include = FALSE, echo = FALSE  }
+
+# Step 3: Plotting
+
+
+growth<-readRDS("tasa_a.rds")%>%
+  mutate(fecha=replace(fecha,fecha==99,-1),
+         fecha=replace(fecha,fecha==98,-2), 
+         fecha=as.numeric(fecha))
+
+ggplot(growth, aes(x=fecha,  group=Suicidio, linetype=Suicidio)) +
+geom_line(aes(y=rate))+
+facet_wrap(~Estado, nrow=6)+
+geom_hline(yintercept = 0)+
+labs(linetype="Tasa de crecimiento")+
+ylab("Tasa de crecimiento 1998=0 (%)") +
+xlab("Año")+
+theme_bw()+theme(legend.position=c(.9,.01))+
+   scale_x_continuous(breaks=c(0, 5, 10, 15))
+
+ggsave("C:/Users/LENOVO/Desktop/DESK/I/S/FIG_1_Trend.tiff", width = 23, height = 17, units = "cm",dpi=300)
+```
+
+
+```{r, include = FALSE, echo = FALSE  }
+
+# Top ten Estados by gap
+
+growth<-readRDS("tasa_a.rds")%>%
+mutate(fecha=replace(fecha,fecha==99,-1),
+fecha=replace(fecha,fecha==98,-2),
+fecha=as.numeric(fecha))%>%
+select(-c(s,casos))
+
+
+sp<-spread(growth,Suicidio,rate)
+
+
+top10gap<-mutate(sp,dif=Suicidio-Otras_Causas)%>%
+group_by( Estado)%>%
+summarize(m=mean(dif))%>%
+  arrange(desc(m))%>%
+  head(3)
+
+
+bottom3gap<-mutate(sp,dif=Suicidio-Otras_Causas)%>%
+group_by( Estado)%>%
+summarize(m=mean(dif))%>%
+  arrange(desc(m))%>%
+  tail(3)
+```
+
+
+```{r Tipos de suicide Categorias}
+cie<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/CATCIE10.csv")
+names(cie)
+S1<-filter(cie,substring(CAUSA,1,3)=="X60",
+            CAUSA!="X699")%>%
+  select(CAUSA)
+
+```
+
+
+
+```{r Individual plot for the top 6. }
+
+## Plotting  FN y FS
+
+growth<-readRDS("tasa_a.rds")%>%
+  mutate(fecha=replace(fecha,fecha==99,-1),
+         fecha=replace(fecha,fecha==98,-2), 
+         fecha=as.numeric(fecha))%>%
+select(-c(c,casos))
+
+growth.1<-readRDS("tasa_a.rds")%>%
+  mutate(fecha=replace(fecha,fecha==99,-1),
+         fecha=replace(fecha,fecha==98,-2), 
+         fecha=as.numeric(fecha))%>%
+select(-c(c,casos))%>%
+mutate(tipo=ifelse(Estado=="Chihuahua"|Estado=="Tamaulipas"|Estado=="Baja California"| Estado=="Nuevo León"| Estado=="Coahuila"| Estado=="Sonora", "N",ifelse(Estado=="Chiapas"|Estado=="Quintana Roo"|Estado=="Yucatán"|Estado=="Campeche"|Estado=="Tabasco","S",0)))%>%
+  filter(tipo!=0)%>%
+ mutate(fecha=replace(fecha,fecha==-1,1999),
+        fecha=replace(fecha,fecha==-2,1998),
+        fecha=replace(fecha,fecha==0,2000),
+        fecha=replace(fecha,fecha==1,2001),
+        fecha=replace(fecha,fecha==2,2002),
+        fecha=replace(fecha,fecha==3,2003),
+        fecha=replace(fecha,fecha==4,2004),
+        fecha=replace(fecha,fecha==5,2005),
+        fecha=replace(fecha,fecha==6,2006),
+        fecha=replace(fecha,fecha==7,2007),
+        fecha=replace(fecha,fecha==8,2008),
+        fecha=replace(fecha,fecha==9,2009),
+        fecha=replace(fecha,fecha==10,2010),
+        fecha=replace(fecha,fecha==11,2011),
+        fecha=replace(fecha,fecha==12,2012),
+        fecha=replace(fecha,fecha==13,2013),
+        fecha=replace(fecha,fecha==14,2014),
+        fecha=replace(fecha,fecha==15,2015))
+
+
+
+
+ggplot(growth.1, aes(x=fecha,  group=Cáncer, linetype=Cáncer)) +
+geom_line(aes(y=rate))+
+facet_wrap(~Estado, ncol=3)+
+geom_hline(yintercept = 0)+
+labs(linetype="Cáncer")+
+ylab("Tasa de crecimiento 1998=0 (%)") +
+xlab("")+
+theme_bw()+
+theme(legend.position=c(.85,.05))+
+scale_x_continuous(breaks=c(2000, 2005, 2010, 2015))
+
+ggsave("C:/Users/LENOVO/Desktop/DESK/I/E_colli_Bacteria/gph/growth_FN_FS.tiff", width = 22, height = 18, units = "cm",dpi=300)
+names(growth.1)
+d15<-filter(growth.1,fecha==2015,Cáncer=="Colon")
+
+```
+
+
+
+
+```{r}
+
+growth<-readRDS("tasa_a.rds")%>%
+  mutate(fecha=replace(fecha,fecha==99,-1),
+         fecha=replace(fecha,fecha==98,-2), 
+         fecha=as.numeric(fecha))%>%
+select(-c(c,casos))
+
+sp<-spread(growth,Cáncer,rate)
+
+sp1<-spread(growth,Cáncer,rate)%>%
+mutate(frontera=ifelse(Estado=="Baja California"|Estado=="Sonora"|Estado=="Chihuahua"|Estado=="Coahuila"|Estado=="Nuevo León"|Estado=="Tamaulipas",1,ifelse(Estado=="Tamaulipas"|Estado=="Tabasco"|Estado=="Campeche"|Estado=="Yucatán"|Estado=="Chiapas"|Estado=="Quintana Roo",2,0)))%>%
+  filter(frontera!=0)%>%
+  group_by(Estado)%>%
+  summarise(mean=mean(Colon))
+
+all<-mutate(sp,dif=Colon-Otras_Causas)%>%
+mutate(tipo=ifelse(Estado=="Chihuahua"|Estado=="Tamaulipas"|Estado=="Baja California","N",ifelse(Estado=="Tabasco"|Estado=="Quintana Roo"|Estado=="Campeche","S",0)))%>%
+  filter(tipo!=0)
+
+all.1<-filter(sp,fecha==15)%>%
+mutate(dif=Colon-Otras_Causas)%>%
+mutate(frontera=ifelse(Estado=="Baja California"|Estado=="Sonora"|Estado=="Chihuahua"|Estado=="Coahuila"|Estado=="Nuevo León"|Estado=="Tamaulipas",1,ifelse(Estado=="Tamaulipas"|Estado=="Tabasco"|Estado=="Campeche"|Estado=="Yucatán"|Estado=="Chiapas"|Estado=="Quintana Roo",2,0)))%>%
+  filter(frontera!=0)
+
+write.csv(all.1,"brechas.csv")
+
+ggplot(all,aes(x=fecha,  y=dif, group=Estado,colour=Estado)) +
+geom_line()+
+geom_hline(yintercept = 0)+
+geom_point(size=1.5, shape=21,fill="white")+
+facet_grid(.~tipo)+
+labs(colour="Estado")+
+ylab("Brecha (%)") +
+xlab("Año")+
+theme_bw()+
+theme(legend.position=c(.9,.80))+
+scale_x_continuous(breaks=c(0, 5, 10, 15))
+
+
+ggplot(all,aes(x=fecha,  y=dif, group=Estado,linetype=Estado)) +
+geom_line()+
+geom_hline(yintercept = 0)+
+geom_point(size=1.5, shape=21,fill="white")+
+facet_grid(.~tipo)+
+labs(linetype="Estado")+
+ylab("Brecha (%)") +
+xlab("Año")+
+theme_bw()+
+theme(legend.position=c(.92,.75))+
+scale_x_continuous(breaks=c(0, 5, 10, 15))
+
+ggsave("C:/Users/LENOVO/Desktop/DESK/I/E_colli_Bacteria/gph/bw_high-low.tiff", width = 24, height = 12, units = "cm",dpi=300)
+
+date<-gather(data.frame(date=replicate(3,seq(1998,2015, 1))),fecha,date,date.1:date.3)
+
+  
+high<-mutate(sp,dif=Colon-Otras_Causas)%>%
+mutate(tipo=ifelse(Estado=="Querétaro"|Estado=="Guanajuato"|Estado=="Baja California",1,ifelse(Estado=="Tabasco"|Estado=="Colima"|Estado=="Durango",2,0)))%>%
+  filter(tipo==1)
+high<-cbind(high,date)
+
+low<-mutate(sp,dif=Colon-Otras_Causas)%>%
+mutate(tipo=ifelse(Estado=="Querétaro"|Estado=="Guanajuato"|Estado=="Baja California",1,ifelse(Estado=="Tabasco"|Estado=="Colima"|Estado=="Durango",2,0)))%>%
+filter(tipo==2)
+low<-cbind(low,date)
+
+phigh<-ggplot(high,aes(x=date,  y=dif, group=Estado)) +
+geom_line()+
+geom_hline(yintercept = 0)+
+geom_point(size=1.5, shape=21,fill="white")+
+facet_grid(.~Estado)+
+labs(linetype="Cáncer")+
+ylab("Brecha vs. otras causas (%)") +
+xlab("Año")+
+theme_bw()+
+theme(legend.position=c(.85,.25))+
+scale_x_continuous(breaks=c(1998, 2000,2005, 2010, 2015))
+
+ggsave("C:/Users/LENOVO/Desktop/DESK/I/E_colli_Bacteria/gph/high.tiff", width = 30, height = 10, units = "cm",dpi=300)
+
+plow<-ggplot(low,aes(x=date,  y=dif, group=Estado)) +
+geom_line()+
+geom_hline(yintercept = 0)+
+geom_point(size=1.5, shape=21,fill="white")+
+facet_grid(.~Estado)+
+labs(linetype="Cáncer")+
+ylab("") +
+xlab("")+
+theme_bw()+
+theme(legend.position=c(.85,.25))+
+scale_x_continuous(breaks=c(1998, 2000,2005, 2010, 2015))
+
+ggsave("C:/Users/LENOVO/Desktop/DESK/I/E_colli_Bacteria/gph/low.tiff", width = 30, height = 10, units = "cm",dpi=300)
+
+grid.arrange(phigh, plow, nrow=2)
+
+```
+
+
+```
+
+
+
+
+
