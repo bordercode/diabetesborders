@@ -543,7 +543,6 @@ scale_x_continuous(breaks=c(2000, 2005, 2010, 2015))
 ggsave("C:/Users/LENOVO/Desktop/DESK/I/E_colli_Bacteria/gph/growth_FN_FS.tiff", width = 22, height = 18, units = "cm",dpi=300)
 names(growth.1)
 d15<-filter(growth.1,fecha==2015,Cáncer=="Colon")
-
 ```
 
 
