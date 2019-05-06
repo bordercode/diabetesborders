@@ -370,12 +370,19 @@ library(ggthemes)
 
 # Step 3: Plotting
 
-
 growth<-readRDS("tasa_a.rds")%>%
   mutate(fecha=replace(fecha,fecha==99,-1),
          fecha=replace(fecha,fecha==98,-2), 
          fecha=as.numeric(fecha))
 
+str(growth)
+ave<-growth%>%
+filter(fecha==17)%>%
+  group_by(d)%>%
+  summarize(ave=mean(rate))
+
+ave<-growth%>%
+filter(fecha==17)
 
 ggplot(growth, aes(x=fecha,  group=Diabetes, color=Diabetes)) +
 geom_line(aes(y=rate))+
