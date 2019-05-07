@@ -362,6 +362,7 @@ mutate(Diabetes=ifelse(d==1,"Diabetes","Otras_Causas"))
 saveRDS(tasa_a,"tasa_a.rds")
 ```
 
+
 ## Crecimiento en Defunciones  por Diabestes en México. 
 
 ```{r, include = FALSE, echo = FALSE  }
@@ -375,7 +376,9 @@ growth<-readRDS("tasa_a.rds")%>%
          fecha=replace(fecha,fecha==98,-2), 
          fecha=as.numeric(fecha))
 
-str(growth)
+y<-group_by(growth,fecha)%>%
+  summarize(n())
+
 ave<-growth%>%
 filter(fecha==17)%>%
   group_by(d)%>%
@@ -396,7 +399,7 @@ theme(legend.position=c(.8,.02))+
 scale_x_continuous(breaks=c(0, 5, 10, 15, 17))+
 theme_tufte()
 
-ggsave("C:/Users/LENOVO/Desktop/DESK/web/diabetesborders/FIG_1_Trend.tiff", width = 23, height = 17, units = "cm",dpi=300)
+ggsave("C:/Users/LENOVO/Desktop/DESK/I/diabetesborders/FIG_1_Trend.tiff", width = 23, height = 17, units = "cm",dpi=300)
 ```
 
 
@@ -463,22 +466,25 @@ ggsave("C:/Users/LENOVO/Desktop/DESK/web/diabetesborders/FIG_2_Fs_trend.tiff", w
 
 ## Gao
 
-ds<-spread(growth,Diabetes,rate)
+ds<-spread(growth,Diabetes,rate)%>%
+  filter(fecha==17)%>%
+  mutate(diff=Diabetes-Otras_Causas)
 
 # top 3 
-top3gap<-mutate(ds,dif=Diabetes-Otras_Causas)%>%
+top3gap<-ds%>%
 group_by( Estado)%>%
-summarize(m=mean(dif))%>%
+summarize(m=mean(diff))%>%
   arrange(desc(m))%>%
   head(3)
 
-## Chiapas es el estado con la mayor gap. 65% Problema de alto crecimiento.
+## Chiapas es el estado con la mayor gap. 149.8% Problema de alto crecimiento.
 
 
 # Bottm  3 
-bottom3gap<-mutate(ds,dif=Diabetes-Otras_Causas)%>%
+
+bottom3gap<-ds%>%
 group_by( Estado)%>%
-summarize(m=mean(dif))%>%
+summarize(m=mean(diff))%>%
   arrange(desc(m))%>%
   tail(3)
 

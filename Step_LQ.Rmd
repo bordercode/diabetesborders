@@ -1,0 +1,889 @@
+---
+title: "Step_Lq"
+author: "JLMR"
+date: "6 de mayo de 2019"
+output: html_document
+---
+
+
+
+```{r set-global-options, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(eval = TRUE, 
+                      echo = FALSE, 
+                      cache = FALSE,
+                      include = TRUE,
+                      collapse = FALSE,
+                      dependson = NULL,
+                      engine = "R", # Chunks will always have R code, unless noted
+                      error = FALSE,                      
+                      fig.path="Figuras/",  # Set the figure options
+                      fig.align = "center", 
+                      fig.width = 7,
+                      fig.height = 5)
+```
+
+
+
+```{r silent-packages, echo = FALSE, eval = TRUE, message=FALSE, include = FALSE}
+library(ggthemes)
+library(foreign)
+library(knitr)
+library(tidyverse)
+library(DT)
+library(plotly)
+library(grid)
+library(gridExtra)
+```
+
+
+
+```{r}
+
+d17<-readRDS("def17_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ENT_RESID), d=as.factor(d))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+select(-ENT_RESID)%>%
+spread(d,n17)
+
+lq_num<-d17%>%
+mutate(n=d/O*100)
+
+lq_den<-d17%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq17<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+  mutate(ent_res=as.factor(ent_res))
+
+  
+lq17<-left_join(lq17,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq17,"lq17.csv")
+
+```
+
+
+```{r Color Plot}
+
+lq17<-read.csv("lq17.csv")
+
+ggplot(lq17, aes(x=reorder(Estado,LQ), y=LQ, size=LQ, color=Nivel))+
+  geom_point()+
+  xlab("Estado")+
+  ylab("LQ")+
+  theme_bw()+
+scale_colour_hue(l=45)+
+  coord_flip()+
+  geom_hline(yintercept=1, linetype="dashed")+
+  annotate("text", y=1.25, x=12, label="LQ=1 Nivel Nacional")+
+  annotate("segment", x=10, xend=10, y=1.3, yend=1.1,  size=.3, arrow=arrow(length=unit(.2,"cm")))
+
+ggsave("C:/Users/LENOVO/Desktop/DESK/I/diabetesborders/FIG_LQ_color.tiff", width = 24, height = 16, units = "cm",dpi=300)
+
+
+```
+
+
+```{r}
+d16<-readRDS("def16_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ENT_RESID), d=as.factor(d))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+select(-ENT_RESID)%>%
+spread(d,n16)
+
+lq_num<-d16%>%
+mutate(n=d/O*100)
+
+lq_den<-d16%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq16<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+  mutate(ent_res=as.factor(ent_res))
+
+  
+lq16<-left_join(lq16,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq16,"lq16.csv")
+```
+
+```{r}
+d15<-readRDS("def15_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ENT_RESID), d=as.factor(d))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+select(-ENT_RESID)%>%
+spread(d,n15)
+
+lq_num<-d15%>%
+mutate(n=d/O*100)
+
+lq_den<-d15%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq15<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+  mutate(ent_res=as.factor(ent_res))%>%
+  mutate(ent_res=sprintf("%02d",ent_res))
+
+  
+
+  
+lq15<-left_join(lq15,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq15,"lq15.csv")
+```
+
+
+
+```{r}
+
+# LQ  2014
+
+
+d14<-readRDS("def14_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d),ent_res=sprintf("%02d",ent_res))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n14)
+
+lq_num<-d14%>%
+mutate(n=d/O*100)
+
+lq_den<-d14%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq14<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+  
+lq14<-left_join(lq14,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq14,"lq14.csv")
+```
+
+
+
+
+```{r}
+
+# LQ  2013
+
+d13<-readRDS("def13_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n13)
+
+lq_num<-d13%>%
+mutate(n=d/O*100)
+
+lq_den<-d13%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq13<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res),ent_res=sprintf("%02d",ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=as.factor(ent_res),ent_res=sprintf("%02d",ent_res))
+
+
+lq13<-left_join(lq13,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq13,"lq13.csv")
+```
+
+
+
+
+```{r}
+
+# LQ  2012
+
+d12<-readRDS("def12_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n12)
+
+
+lq_num<-d12%>%
+mutate(n=d/O*100)
+
+lq_den<-d12%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq12<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=as.factor(ent_res))
+
+lq12<-left_join(lq12,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq12,"lq12.csv")
+```
+
+
+```{r}
+
+# LQ  2011
+
+d11<-readRDS("def11_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n11)
+
+
+lq_num<-d11%>%
+mutate(n=d/O*100)
+
+lq_den<-d11%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq11<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+lq11<-left_join(lq11,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq11,"lq11.csv")
+```
+
+
+```{r}
+
+# LQ  2010
+
+d10<-readRDS("def10_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n10)
+
+
+lq_num<-d10%>%
+mutate(n=d/O*100)
+
+lq_den<-d10%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq10<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+lq10<-left_join(lq10,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq10,"lq10.csv")
+```
+
+
+```{r}
+
+# LQ  2009
+
+d09<-readRDS("def09_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n09)
+
+
+lq_num<-d09%>%
+mutate(n=d/O*100)
+
+lq_den<-d09%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq09<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+
+lq09<-left_join(lq09,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq09,"lq09.csv")
+```
+
+```{r}
+# LQ  2008
+
+d08<-readRDS("def08_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n08)
+
+
+
+lq_num<-d08%>%
+mutate(n=d/O*100)
+
+lq_den<-d08%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq08<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+lq08<-left_join(lq08,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq08,"lq08.csv")
+```
+
+
+
+```{r}
+# LQ  2007
+
+d07<-readRDS("def07_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n07)
+
+
+lq_num<-d07%>%
+mutate(n=d/O*100)
+
+lq_den<-d07%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq07<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+lq07<-left_join(lq07,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq07,"lq07.csv")
+```
+
+```{r}
+
+# LQ  2006
+
+d06<-readRDS("def06_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n06)
+
+lq_num<-d06%>%
+mutate(n=d/O*100)
+
+lq_den<-d06%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq06<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+lq06<-left_join(lq06,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq06,"lq06.csv")
+```
+
+```{r}
+
+# LQ  2005
+
+d05<-readRDS("def05_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d),ent_res=sprintf("%02d",ent_res))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n05)
+
+
+lq_num<-d05%>%
+mutate(n=d/O*100)
+
+lq_den<-d05%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq05<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+lq05<-left_join(lq05,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq05,"lq05.csv")
+```
+
+```{r}
+
+# LQ  2004
+
+d04<-readRDS("def04_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d),ent_res=sprintf("%02d",ent_res))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n04)
+
+
+
+lq_num<-d04%>%
+mutate(n=d/O*100)
+
+lq_den<-d04%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq04<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+glimpse(lq04)
+
+lq04<-left_join(lq04,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq04,"lq04.csv")
+```
+
+```{r}
+
+# LQ  2003
+
+d03<-readRDS("def03_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d),ent_res=sprintf("%02d",ent_res))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n03)
+
+
+lq_num<-d03%>%
+mutate(n=d/O*100)
+
+lq_den<-d03%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq03<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+lq03<-left_join(lq03,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq03,"lq03.csv")
+```
+
+```{r}
+
+# LQ  2002
+
+d02<-readRDS("def02_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d),ent_res=sprintf("%02d",ent_res))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n02)
+
+lq_num<-d02%>%
+mutate(n=d/O*100)
+
+lq_den<-d02%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq02<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+lq02<-left_join(lq02,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq02,"lq02.csv")
+```
+
+
+```{r}
+
+# LQ  2001
+
+d01<-readRDS("def01_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d),ent_res=sprintf("%02d",ent_res))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n01)
+
+
+lq_num<-d01%>%
+mutate(n=d/O*100)
+
+lq_den<-d01%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq01<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+lq01<-left_join(lq01,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq01,"lq01.csv")
+```
+
+```{r}
+
+# LQ  2000
+
+d00<-readRDS("def00_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d),ent_res=sprintf("%02d",ent_res))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n00)
+
+lq_num<-d00%>%
+mutate(n=d/O*100)
+
+lq_den<-d00%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq00<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+lq00<-left_join(lq00,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq00,"lq00.csv")
+```
+
+
+```{r}
+
+# LQ 1999
+
+d99<-readRDS("def99_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d),ent_res=sprintf("%02d",ent_res))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n1999)
+
+
+lq_num<-d99%>%
+mutate(n=d/O*100)
+
+lq_den<-d99%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq99<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+lq99<-left_join(lq99,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq99,"lq99.csv")
+```
+
+
+
+```{r}
+
+# LQ 1998
+
+d98<-readRDS("def98_casos.rds")%>%
+ungroup()%>%
+mutate(ent_res=as.factor(ent_res), d=as.factor(d),ent_res=sprintf("%02d",ent_res))%>%
+mutate(d=ifelse(d==0,"O","d"))%>%
+spread(d,n1998)
+
+lq_num<-d98%>%
+mutate(n=d/O*100)
+
+lq_den<-d98%>%
+mutate(dn=sum(d)/sum(O)*100)
+
+lq<-inner_join(lq_num,lq_den)
+
+lq98<-mutate(lq,lq=round(n/dn,digits=2))%>%
+  arrange(desc(lq))%>%
+  mutate(ent_res=as.factor(ent_res))
+  
+cat_e<-read.csv("C:/Users/LENOVO/Desktop/DESK/I/data/cat_entidad.csv")%>%
+select(-X)%>%
+rename(ent_res=X.U.FEFF.EDO,Estado=DESCRIP)%>%
+mutate(ent_res=sprintf("%02d",ent_res))
+
+
+lq98<-left_join(lq98,cat_e, by="ent_res")%>%
+  mutate(Nivel=as.factor(ifelse(lq>1,"Alto","Moderado")))%>%
+  rename(LQ=lq)
+
+write.csv(lq98,"lq98.csv")
+```
+
+```{r}
+## Tidy  data.
+
+lq98<-read.csv("lq98.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ1998=LQ)
+
+lq99<-read.csv("lq99.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ1999=LQ)
+  
+
+lq00<-read.csv("lq00.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2000=LQ)
+  
+
+lq01<-read.csv("lq01.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2001=LQ)  
+
+lq02<-read.csv("lq02.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2002=LQ) 
+
+lq03<-read.csv("lq03.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2003=LQ) 
+
+lq04<-read.csv("lq04.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2004=LQ) 
+
+lq05<-read.csv("lq05.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2005=LQ) 
+
+lq06<-read.csv("lq06.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2006=LQ) 
+
+lq07<-read.csv("lq07.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2007=LQ) 
+
+lq08<-read.csv("lq08.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2008=LQ) 
+
+lq09<-read.csv("lq09.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2009=LQ) 
+
+lq10<-read.csv("lq10.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2010=LQ) 
+
+lq11<-read.csv("lq11.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2011=LQ) 
+
+lq12<-read.csv("lq12.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2012=LQ) 
+
+lq13<-read.csv("lq13.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2013=LQ) 
+
+lq14<-read.csv("lq14.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2014=LQ) 
+
+lq15<-read.csv("lq15.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2015=LQ) 
+
+lq16<-read.csv("lq16.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2016=LQ) 
+
+lq17<-read.csv("lq17.csv")%>%
+select(LQ,Estado)%>%
+rename(LQ2017=LQ) 
+
+
+L<- list(lq17,lq16,lq15,lq14,lq13,lq12,lq11,lq10,lq09,lq08,lq07,lq06,lq05,lq04,lq03,lq02,lq01,lq00,lq99,lq98)
+
+lq98_lq17<-Reduce(inner_join, L)%>%
+select(Estado,everything())
+
+lq98_17a<-gather(lq98_lq17,Fecha,LQ,LQ1998:LQ2017)%>%
+mutate(Fecha=substring(Fecha,3,6))
+
+write.csv(lq98_17a,"LQ98_17x.csv")
+
+```
